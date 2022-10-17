@@ -10,7 +10,15 @@ app.use(cors());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+  const user = users.find(user => user.username === username);
+  
+  if (user){
+    request.user = user;
+    next();
+  }
+
+  return response.status(404).json({ error: 'Usuario não existe'})
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
@@ -67,7 +75,7 @@ app.patch('/users/:id/pro', findUserById, (request, response) => {
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   const { user } = request;
-
+  console.log(user);
   return response.json(user.todos);
 });
 
