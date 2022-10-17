@@ -12,7 +12,7 @@ const users = [];
 function checksExistsUserAccount(request, response, next) {
   const { username } = request.headers;
   const user = users.find(user => user.username === username);
-  
+
   if (user){
     request.user = user;
     next();
@@ -22,7 +22,21 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  //Somente se for plano PRO
+  //Ou ainda não tiver 10 todos cadastrados
+  //ou se o plano for gratis
+  const { user } = request;
+  console.log(user);
+
+  if (user.pro === true || user.todos.length < 10){
+    next();
+  }
+
+  if (user.pro === false && user.todos.length > 9 ){
+    return response.status(403).json({ error: 'Proibido'})
+  }
+  
+  return response.status(404).json({ error: 'Usuario não possui um plano valido!'});
 }
 
 function checksTodoExists(request, response, next) {
@@ -75,7 +89,6 @@ app.patch('/users/:id/pro', findUserById, (request, response) => {
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   const { user } = request;
-  console.log(user);
   return response.json(user.todos);
 });
 
