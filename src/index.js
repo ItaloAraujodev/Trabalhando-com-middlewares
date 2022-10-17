@@ -22,11 +22,7 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  //Somente se for plano PRO
-  //Ou ainda não tiver 10 todos cadastrados
-  //ou se o plano for gratis
   const { user } = request;
-  console.log(user);
 
   if (user.pro === true || user.todos.length < 10){
     next();
