@@ -36,7 +36,30 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+    const { username } = request.headers;
+    const { id } = request.params;
+    const regexExp = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
+
+    const validandoUser = users.find(user => user.username === username);
+
+    if(!regexExp.test(id)){
+      return response.status(400).json({ error: 'ID invalido!'});
+    } 
+
+     if (!validandoUser){
+      return response.status(404).json({ error: 'User, not found'});
+    }
+
+    const findById = validandoUser.todos.find(todo => todo.id === id);
+
+    if (!findById){
+      return response.status(404).json({ error: 'User, not found'});
+    }
+
+    request.user = validandoUser;
+    request.todo = findById;
+
+    next();
 }
 
 function findUserById(request, response, next) {
@@ -84,8 +107,8 @@ app.patch('/users/:id/pro', findUserById, (request, response) => {
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
-  const { user } = request;
-  return response.json(user.todos);
+  /* const { user } = request; */
+  return response.json(users);
 });
 
 app.post('/todos', checksExistsUserAccount, checksCreateTodosUserAvailability, (request, response) => {
