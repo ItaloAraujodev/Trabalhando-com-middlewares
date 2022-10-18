@@ -53,7 +53,7 @@ function checksTodoExists(request, response, next) {
     const findById = validandoUser.todos.find(todo => todo.id === id);
 
     if (!findById){
-      return response.status(404).json({ error: 'User, not found'});
+      return response.status(404).json({ error: 'Todo, not found'});
     }
 
     request.user = validandoUser;
@@ -63,7 +63,16 @@ function checksTodoExists(request, response, next) {
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const { id } = request.params;
+
+  const userExists = users.find(user => user.id === id);
+
+  if (userExists){
+    request.user = userExists;
+    next();
+  }
+  
+  return response.status(404).json({ error: 'User not found!'});
 }
 
 app.post('/users', (request, response) => {
